@@ -13,23 +13,23 @@ Ever _accidentally_ break your API compatibility while you're busy fixing proble
 
 ## Overview
 
-1. **Initialize** your repository: 
+1. **Initialize** your repository:
 
         $ protolock init
         # creates a `proto.lock` file
 
-3. **Add changes** to .proto messages or services, verify no breaking changes made: 
+3. **Add changes** to .proto messages or services, verify no breaking changes made:
 
         $ protolock status
         CONFLICT: "Channel" is missing ID: 108, which had been reserved [path/to/file.proto]
         CONFLICT: "Channel" is missing ID: 109, which had been reserved [path/to/file.proto]
 
-2. **Commit** a new state of your .protos (rewrites `proto.lock` if no warnings): 
+2. **Commit** a new state of your .protos (rewrites `proto.lock` if no warnings):
 
         $ protolock commit
         # optionally provide --force flag to disregard warnings
 
-4. **Integrate** into your protobuf compilation step: 
+4. **Integrate** into your protobuf compilation step:
 
         $ protolock status && protoc -I ...
 
@@ -92,51 +92,51 @@ Options:
 ## Rules Enforced
 
 #### No Using Reserved Fields
-Compares the current vs. updated Protolock definitions and will return a list of 
-warnings if any message's previously reserved fields or IDs are now being used 
+Compares the current vs. updated Protolock definitions and will return a list of
+warnings if any message's previously reserved fields or IDs are now being used
 as part of the same message.
 
 #### No Removing Reserved Fields
-Compares the current vs. updated Protolock definitions and will return a list of 
-warnings if any reserved field has been removed. 
+Compares the current vs. updated Protolock definitions and will return a list of
+warnings if any reserved field has been removed.
 
-**Note:** This rule is not enforced when strict mode is disabled. 
+**Note:** This rule is not enforced when strict mode is disabled.
 
 
 #### No Changing Field IDs
-Compares the current vs. updated Protolock definitions and will return a list of 
+Compares the current vs. updated Protolock definitions and will return a list of
 warnings if any field ID number has been changed.
 
 
 #### No Changing Field Types
-Compares the current vs. updated Protolock definitions and will return a list of 
+Compares the current vs. updated Protolock definitions and will return a list of
 warnings if any field type has been changed.
 
 
 #### No Changing Field Names
-Compares the current vs. updated Protolock definitions and will return a list of 
-warnings if any message's previous fields have been renamed. 
+Compares the current vs. updated Protolock definitions and will return a list of
+warnings if any message's previous fields have been renamed.
 
-**Note:** This rule is not enforced when strict mode is disabled. 
+**Note:** This rule is not enforced when strict mode is disabled.
 
 #### No Removing Fields Without Reserve
-Compares the current vs. updated Protolock definitions and will return a list of 
-warnings if any field has been removed without a corresponding reservation of 
+Compares the current vs. updated Protolock definitions and will return a list of
+warnings if any field has been removed without a corresponding reservation of
 that field name or ID.
 
 #### No Removing RPCs
-Compares the current vs. updated Protolock definitions and will return a list of 
-warnings if any RPCs provided by a Service have been removed. 
+Compares the current vs. updated Protolock definitions and will return a list of
+warnings if any RPCs provided by a Service have been removed.
 
-**Note:** This rule is not enforced when strict mode is disabled. 
+**Note:** This rule is not enforced when strict mode is disabled.
 
 #### No Changing RPC Signature
-Compares the current vs. updated Protolock definitions and will return a list of 
+Compares the current vs. updated Protolock definitions and will return a list of
 warnings if any RPC signature has been changed while using the same name.
 
 ---
 
-## Docker 
+## Docker
 
 ```sh
 docker pull nilslice/protolock:latest
@@ -146,17 +146,37 @@ docker run -v $(pwd):/protolock -w /protolock nilslice/protolock init
 ---
 
 ## Plugins
-The default rules enforced by `protolock` may not cover everything you want to 
-do. If you have custom checks you'd like run on your .proto files, create a 
-plugin, and have `protolock` run it and report your warnings. Read the wiki to 
+The default rules enforced by `protolock` may not cover everything you want to
+do. If you have custom checks you'd like run on your .proto files, create a
+plugin, and have `protolock` run it and report your warnings. Read the wiki to
 learn more about [creating and using plugins](https://github.com/nilslice/protolock/wiki/Plugins).
+
+
+## Pre-Commit Hook
+To prevent breaking changes from being committed, you can use a pre-commit hook
+to run `protolock status` before allowing a commit.
+
+Then you need to have the [pre-commit](https://pre-commit.com/) package installed.
+Then, simply add the following snippet to your `.pre-commit-config.yaml` file:
+
+```yaml
+  - repo: https://github.com/nilslice/protolock
+    rev: v0.17.0
+    hooks:
+      - id: protolock
+        name: Running Protolock on proto files
+        pass_filenames: false
+```
+
+You should be able to run pre-commit with `pre-commit run --all-files` and see
+`protolock` run on your proto files.
 
 ---
 
 ## Contributing
-Please feel free to make pull requests with better support for various rules, 
+Please feel free to make pull requests with better support for various rules,
 optimized code and overall tests. Filing an issue when you encounter a bug or
-any unexpected behavior is very much appreciated. 
+any unexpected behavior is very much appreciated.
 
 For current issues, see: [open issues](https://github.com/nilslice/protolock/issues)
 
