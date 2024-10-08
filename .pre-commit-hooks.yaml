@@ -1,0 +1,8 @@
+-   id: protolock
+    name: Running Protolock on proto files
+    description: prevents breaking changes and make sure proto.lock get up-to-date.
+    entry: protolock
+    language: golang
+    stages: [pre-commit, pre-push, manual]
+    minimum_pre_commit_version: 3.2.0
+    args: ["commit", "--uptodate", "--lockdir=."]
